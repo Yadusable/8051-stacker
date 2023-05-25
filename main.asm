@@ -1,0 +1,32 @@
+START:
+MOV B, P0
+MOV B, #0ffh
+
+CALL INS3
+CALL CNP
+
+;--- INSERT 3x1 INTO A ---
+INS3:
+ORL A, #01d
+RL A
+ORL A, #01d
+RL A
+ORL A, #01d
+RET
+
+;--- INSERT 2x1 INTO A ---
+INS2:
+ORL A, #01d
+RL A
+ORL A, #01d
+RET
+
+;--- INSERT 1x1 INTO A ---
+INS1:
+ORL A, #01d
+RET
+
+;--- CLICK AND PLACE ---
+CNP:
+RL A
+jmp CNP
