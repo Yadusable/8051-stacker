@@ -7,80 +7,102 @@ main                                                                            
                          6
                          7     START:
 0000 859080              8             mov     P0, P1
-0003 7800                9             MOV     R0, #000h
-0005 75F0FF             10             MOV     B, #0ffh
+0003 7810                9             MOV     R0, #010h       ;R0 is the layer counter, 0x10=lowest
+0005 75F0FF             10             MOV     B, #0ffh        ;all positions are valid for first layer
                         11
-0008 12000E             12             CALL    INS3
-000B 120020             13             CALL    LOOP_1
-                        14
-                        15     ; --- INSERT 3x1 INTO A ---
-                        16     INS3:
-000E 4401               17             ORL     A, #01d
-0010 23                 18             RL      A
-0011 4401               19             ORL     A, #01d
-0013 23                 20             RL      A
-0014 4401               21             ORL     A, #01d
-0016 22                 22             RET
-                        23
-                        24     ; --- INSERT 2x1 INTO A ---
-                        25     INS2:
-0017 4401               26             ORL     A, #01d
-0019 23                 27             RL      A
-001A 4401               28             ORL     A, #01d
-001C 22                 29             RET
-                        30
-                        31     ; --- INSERT 1x1 INTO A ---
-                        32     INS1:
-001D 4401               33             ORL     A, #01d
-001F 22                 34             RET
-                        35
-                        36
-                        37     ; --- GAME LOOP ---
-                        38     LOOP_1:
-0020 23                 39             RL      A
-0021 30A008             40             JNB     P2.0, ONCLICK_1
-0024 80FA               41             jmp     LOOP_1
-                        42
-                        43     LOOP_2:
-0026 23                 44             RL      A
-0027 20A006             45             JB      P2.0, ONCLICK_2
-002A 80FA               46             JMP     LOOP_2
+0008 12003B             12             CALL    INS3
+000B 12004D             13             CALL    CYCLE
+000E 12003B             14             CALL    INS3
+0011 12004D             15             CALL    CYCLE
+0014 12003B             16             CALL    INS3
+0017 12004D             17             CALL    CYCLE
+                        18
+001A 120044             19             CALL    INS2
+001D 12004D             20             CALL    CYCLE
+0020 120044             21             CALL    INS2
+0023 12004D             22             CALL    CYCLE
+0026 120044             23             CALL    INS2
+0029 12004D             24             CALL    CYCLE
+                        25
+002C 12004A             26             CALL    INS1
+002F 12004D             27             CALL    CYCLE
+0032 12004A             28             CALL    INS1
+0035 12004D             29             CALL    CYCLE
+0038 020073             30             JMP     END
+                        31
+                        32     ; --- INSERT 3x1 INTO A ---
+                        33     INS3:
+003B 4401               34             ORL     A, #01d
+003D 23                 35             RL      A
+003E 4401               36             ORL     A, #01d
+0040 23                 37             RL      A
+0041 4401               38             ORL     A, #01d
+0043 22                 39             RET
+                        40
+                        41     ; --- INSERT 2x1 INTO A ---
+                        42     INS2:
+0044 4401               43             ORL     A, #01d
+0046 23                 44             RL      A
+0047 4401               45             ORL     A, #01d
+0049 22                 46             RET
                         47
-                        48
-                        49     ; --- ON CLICK ---
-                        50     ONCLICK_1:
-                        51             ; <implement onClick logic here>
-002C F5B0               52             MOV P3, A
-002E 80F6               53             JMP     LOOP_2
-                        54
-                        55     ONCLICK_2:
-                        56             ; <implement onClick logic here>
-0030 F5B0               57             MOV P3, A
-0032 80EC               58             JMP     LOOP_1
-                        59
+                        48     ; --- INSERT 1x1 INTO A ---
+                        49     INS1:
+004A 4401               50             ORL     A, #01d
+004C 22                 51             RET
+                        52
+                        53
+                        54     ; --- GAME LOOP ---
+                        55     CYCLE:
+004D 23                 56             RL      A
+004E F5B0               57             MOV     P3, A   ; display instruction, later to be replaced by method call
+0050 30A007             58             JNB     P2.0, ONCLICK_1
+0053 80F8               59             jmp     CYCLE
                         60
-                        61     ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
-                        62     ;
-                        63     ;
-                        64     ; Calculate new row
-                        65     ; store old layer
-                        66     ; Increment Round counter in 0x00 by one
-                        67     ; Reset A to #000h
-                        68     PREPREG:
-0034 52F0               69             anl     B, A
-0036 E8                 70             MOV     A, R0
-0037 A6F0               71             MOV     @R0, B
-0039 2401               72             ADD     A, #01d
-003B F8                 73             MOV     R0, A
-003C 7400               74             MOV     A, #000h
-003E 22                 75             RET
+                        61     PRESS:          ; when button released execute game logic
+0055 20A006             62             JB      P2.0, ONCLICK_2
+0058 80FB               63             JMP     PRESS
+                        64
+                        65
+                        66     ; --- ON CLICK LOGIC ---
+                        67     ONCLICK_1:      ; jump in PRESS Part
+005A F5B0               68             MOV     P3, A           ; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen
+005C 80F7               69             JMP     PRESS
+                        70
+                        71     ONCLICK_2:      ; execute gamelogic
+005E F5B0               72             MOV     P3, A           ; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen
+0060 120064             73             CALL    GAME_STEP
+0063 22                 74             RET
+                        75
                         76
+                        77     ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
+                        78     ; Calculate new row
+                        79     ; store old layer
+                        80     ; Increment Round counter in 0x00 by one
+                        81     ; Reset A to #000h
+                        82     GAME_STEP:
+0064 52F0               83             anl     B, A
+0066 E5F0               84             mov     A, B
+0068 6009               85             JZ      END
+006A E8                 86             MOV     A, R0
+006B A6F0               87             MOV     @R0, B
+006D 2401               88             ADD     A, #01d
+006F F8                 89             MOV     R0, A
+0070 7400               90             MOV     A, #000h
+0072 22                 91             RET
+                        92
+                        93     END:
+****WARNING:Reservedkeywordusedaslabel
+0073 020073             94             JMP     END
+                        95
+                        96
 ****WARNING:Missing`END'directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 2 WARNINGS
 
 
 ERROR SUMMARY:
-Line 76, WARNING:Missing`END'directive
+Line 93, WARNING:Reservedkeywordusedaslabel
+Line 97, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -136,6 +158,7 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
+CYCLE. . . . . . . . . . . . . . . .  C  ADDR  004DH
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -145,6 +168,7 @@ DPL. . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 EA . . . . . . . . . . . . . . . . .  B  ADDR  00AFH  NOT USED
 EC . . . . . . . . . . . . . . . . .  B  ADDR  00AEH  NOT USED
 EECON. . . . . . . . . . . . . . . .  D  ADDR  0096H  NOT USED
+END. . . . . . . . . . . . . . . . .  C  ADDR  0073H
 ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
 ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
 ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
@@ -157,12 +181,13 @@ EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
 EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
 F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
 FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
+GAME_STEP. . . . . . . . . . . . . .  C  ADDR  0064H
 IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
-INS1 . . . . . . . . . . . . . . . .  C  ADDR  001DH  NOT USED
-INS2 . . . . . . . . . . . . . . . .  C  ADDR  0017H  NOT USED
-INS3 . . . . . . . . . . . . . . . .  C  ADDR  000EH
+INS1 . . . . . . . . . . . . . . . .  C  ADDR  004AH
+INS2 . . . . . . . . . . . . . . . .  C  ADDR  0044H
+INS3 . . . . . . . . . . . . . . . .  C  ADDR  003BH
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -176,10 +201,8 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LOOP_1 . . . . . . . . . . . . . . .  C  ADDR  0020H
-LOOP_2 . . . . . . . . . . . . . . .  C  ADDR  0026H
-ONCLICK_1. . . . . . . . . . . . . .  C  ADDR  002CH
-ONCLICK_2. . . . . . . . . . . . . .  C  ADDR  0030H
+ONCLICK_1. . . . . . . . . . . . . .  C  ADDR  005AH
+ONCLICK_2. . . . . . . . . . . . . .  C  ADDR  005EH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -198,7 +221,7 @@ P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
 PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
 PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
 PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
-PREPREG. . . . . . . . . . . . . . .  C  ADDR  0034H  NOT USED
+PRESS. . . . . . . . . . . . . . . .  C  ADDR  0055H
 PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED

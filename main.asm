@@ -6,11 +6,28 @@
 
 START:
 	mov	P0, P1
-	MOV	R0, #000h
-	MOV	B, #0ffh
+	MOV	R0, #010h	;R0 is the layer counter, 0x10=lowest
+	MOV	B, #0ffh	;all positions are valid for first layer
 
 	CALL	INS3
-	CALL	LOOP_1
+	CALL	CYCLE
+	CALL	INS3
+	CALL	CYCLE
+	CALL	INS3
+	CALL	CYCLE
+
+	CALL	INS2
+	CALL	CYCLE
+	CALL	INS2
+	CALL	CYCLE
+	CALL	INS2
+	CALL	CYCLE
+
+	CALL	INS1
+	CALL	CYCLE
+	CALL	INS1
+	CALL	CYCLE
+	JMP	END
 
 ; --- INSERT 3x1 INTO A ---
 INS3:
@@ -35,27 +52,26 @@ INS1:
 
 
 ; --- GAME LOOP ---
-LOOP_1:
+CYCLE:
 	RL	A
+	MOV	P3, A	; display instruction, later to be replaced by method call
 	JNB	P2.0, ONCLICK_1
-	jmp	LOOP_1
+	jmp	CYCLE
 
-LOOP_2:
-	RL	A
+PRESS:		; when button released execute game logic
 	JB	P2.0, ONCLICK_2
-	JMP	LOOP_2
+	JMP	PRESS
 
 
-; --- ON CLICK ---
-ONCLICK_1:
-	; <implement onClick logic here>
+; --- ON CLICK LOGIC ---
+ONCLICK_1:	; jump in PRESS Part
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
-	JMP	LOOP_2
+	JMP	PRESS
 
-ONCLICK_2:
-	; <implement onClick logic here>
+ONCLICK_2:	; execute gamelogic
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
-	JMP	LOOP_1
+	CALL 	GAME_STEP
+	RET
 
 
 ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
@@ -63,11 +79,17 @@ ONCLICK_2:
 ; store old layer
 ; Increment Round counter in 0x00 by one
 ; Reset A to #000h
-PREPREG:
+GAME_STEP:
 	anl	B, A
+	mov 	A, B
+	JZ	END
 	MOV	A, R0
 	MOV	@R0, B
 	ADD	A, #01d
 	MOV	R0, A
 	MOV	A, #000h
 	RET
+
+END:
+	JMP	END
+
