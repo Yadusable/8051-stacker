@@ -1,0 +1,5 @@
+# Porject Config File
+*.mcu8051ide*
+# Compiled Files (?)
+*.*~
+*.bin*

@@ -1,84 +1,26 @@
-main                                                                                                                    PAGE 1
-                         1     ; --- INFO ---
-                         2     ; To start the game, first load the keyboard and matrix configurations
-                         3     ;
-                         4     ; Keyboard port: P2
-                         5     ; Matrix port: <bitte eintragen @Niklas>
+LED_MATRIX_DISPLAY                                                                                                      PAGE 1
+                         1     # MCU 8051 IDE: Virtual HW component configuration file
+****ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+                         2     # Project: 8051-Stacker
+****ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+                         3     # Component: LED Matrix
+****ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+                         4
+                         5     LedMatrix {{C5 3 C6 3 C7 3 R0 3 R1 3 R2 3 R3 3 R4 3 R5 3 R6 3 R7 3 C0 3 C1 3 C2 3 C3 3 C4 3} {C5
+****ERROR:Unknownkeyword:`LedMatrix'`LedMatrix'isneithermacronorinstructionnordirective
+****WARNING:Noinstructionfoundataddress0x00.ConsiderusageofappropriateORGdirectivetoclarifycorrectcodeplacement.
                          6
-                         7     START:
-0000 859080              8             mov     P0, P1
-0003 7800                9             MOV     R0, #000h
-0005 75F0FF             10             MOV     B, #0ffh
-                        11
-0008 12000E             12             CALL    INS3
-000B 120020             13             CALL    LOOP_1
-                        14
-                        15     ; --- INSERT 3x1 INTO A ---
-                        16     INS3:
-000E 4401               17             ORL     A, #01d
-0010 23                 18             RL      A
-0011 4401               19             ORL     A, #01d
-0013 23                 20             RL      A
-0014 4401               21             ORL     A, #01d
-0016 22                 22             RET
-                        23
-                        24     ; --- INSERT 2x1 INTO A ---
-                        25     INS2:
-0017 4401               26             ORL     A, #01d
-0019 23                 27             RL      A
-001A 4401               28             ORL     A, #01d
-001C 22                 29             RET
-                        30
-                        31     ; --- INSERT 1x1 INTO A ---
-                        32     INS1:
-001D 4401               33             ORL     A, #01d
-001F 22                 34             RET
-                        35
-                        36
-                        37     ; --- GAME LOOP ---
-                        38     LOOP_1:
-0020 23                 39             RL      A
-0021 30A008             40             JNB     P2.0, ONCLICK_1
-0024 80FA               41             jmp     LOOP_1
-                        42
-                        43     LOOP_2:
-0026 23                 44             RL      A
-0027 20A004             45             JB      P2.0, ONCLICK_2
-002A 80FA               46             JMP     LOOP_2
-                        47
-                        48
-                        49     ; --- ON CLICK ---
-                        50     ONCLICK_1:
-                        51             ; <implement onClick logic here>
-002C 80F8               52             JMP     LOOP_2
-                        53
-                        54     ONCLICK_2:
-                        55             ; <implement onClick logic here>
-002E 80F0               56             JMP     LOOP_1
-                        57
-                        58
-                        59     ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
-                        60     ;
-                        61     ;
-                        62     ; Calculate new row
-                        63     ; store old layer
-                        64     ; Increment Round counter in 0x00 by one
-                        65     ; Reset A to #000h
-                        66     PREPREG:
-0030 52F0               67             anl     B, A
-0032 E8                 68             MOV     A, R0
-0033 A6F0               69             MOV     @R0, B
-0035 2401               70             ADD     A, #01d
-0037 F8                 71             MOV     R0, A
-0038 7400               72             MOV     A, #000h
-003A 22                 73             RET
-                        74
 ****WARNING:Missing`END'directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 6 WARNINGS
 
 
 ERROR SUMMARY:
-Line 74, WARNING:Missing`END'directive
+Line 1, ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+Line 3, ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+Line 5, ERROR:Unknownkeyword:`#'`#'isneithermacronorinstructionnordirective
+Line 8, ERROR:Unknownkeyword:`LedMatrix'`LedMatrix'isneithermacronorinstructionnordirective
+Line 9, WARNING:Noinstructionfoundataddress0x00.ConsiderusageofappropriateORGdirectivetoclarifycorrectcodeplacement.
+Line 11, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -93,7 +35,7 @@ ADDH . . . . . . . . . . . . . . . .  D  ADDR  00F5H  NOT USED
 ADDL . . . . . . . . . . . . . . . .  D  ADDR  00F4H  NOT USED
 AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
 AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
-B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H
+B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
@@ -158,9 +100,6 @@ FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
 IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
-INS1 . . . . . . . . . . . . . . . .  C  ADDR  001DH  NOT USED
-INS2 . . . . . . . . . . . . . . . .  C  ADDR  0017H  NOT USED
-INS3 . . . . . . . . . . . . . . . .  C  ADDR  000EH
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -174,18 +113,14 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LOOP_1 . . . . . . . . . . . . . . .  C  ADDR  0020H
-LOOP_2 . . . . . . . . . . . . . . .  C  ADDR  0026H
-ONCLICK_1. . . . . . . . . . . . . .  C  ADDR  002CH
-ONCLICK_2. . . . . . . . . . . . . .  C  ADDR  002EH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
-P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H
-P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H
+P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H  NOT USED
+P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H  NOT USED
 P1M1 . . . . . . . . . . . . . . . .  D  ADDR  00D4H  NOT USED
 P1M2 . . . . . . . . . . . . . . . .  D  ADDR  00E2H  NOT USED
-P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H
+P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H  NOT USED
 P3 . . . . . . . . . . . . . . . . .  D  ADDR  00B0H  NOT USED
 P3M1 . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
 P3M2 . . . . . . . . . . . . . . . .  D  ADDR  00E3H  NOT USED
@@ -196,7 +131,6 @@ P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
 PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
 PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
 PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
-PREPREG. . . . . . . . . . . . . . .  C  ADDR  0030H  NOT USED
 PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED
@@ -240,7 +174,6 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-START. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED

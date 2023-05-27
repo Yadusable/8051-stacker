@@ -38,49 +38,69 @@ main                                                                            
                         37     ; --- GAME LOOP ---
                         38     LOOP_1:
 0020 23                 39             RL      A
-0021 30A008             40             JNB     P2.0, ONCLICK_1
-0024 80FA               41             jmp     LOOP_1
+0021 30A00A             40             JNB     P2.0, ONCLICK_1
+0024 02003A             41             jmp     DISP_MATRIX_1
                         42
                         43     LOOP_2:
-0026 23                 44             RL      A
-0027 20A006             45             JB      P2.0, ONCLICK_2
-002A 80FA               46             JMP     LOOP_2
+0027 23                 44             RL      A
+0028 20A008             45             JB      P2.0, ONCLICK_2
+002B 020041             46             JMP     DISP_MATRIX_2
                         47
                         48
                         49     ; --- ON CLICK ---
                         50     ONCLICK_1:
                         51             ; <implement onClick logic here>
-002C F5B0               52             MOV P3, A
-002E 80F6               53             JMP     LOOP_2
+002E F5B0               52             MOV     P3, A           ; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen
+0030 02003A             53             JMP     DISP_MATRIX_1
                         54
                         55     ONCLICK_2:
                         56             ; <implement onClick logic here>
-0030 F5B0               57             MOV P3, A
-0032 80EC               58             JMP     LOOP_1
-                        59
+0033 F5B0               57             MOV     P3, A           ; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen
+0035 020041             58             JMP     DISP_MATRIX_2
+0038 80E6               59             JMP     LOOP_1
                         60
-                        61     ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
-                        62     ;
-                        63     ;
-                        64     ; Calculate new row
-                        65     ; store old layer
-                        66     ; Increment Round counter in 0x00 by one
-                        67     ; Reset A to #000h
-                        68     PREPREG:
-0034 52F0               69             anl     B, A
-0036 E8                 70             MOV     A, R0
-0037 A6F0               71             MOV     @R0, B
-0039 2401               72             ADD     A, #01d
-003B F8                 73             MOV     R0, A
-003C 7400               74             MOV     A, #000h
-003E 22                 75             RET
+                        61     DISP_MATRIX_1:
+003A 7810               62             MOV R0, #10h
+003C F580               63             MOV P0, A
+003E 020048             64             JMP DISP_LOOP_1
+                        65
+                        66     DISP_MATRIX_2:
+0041 7810               67             MOV R0, #10h
+0043 F580               68             MOV P0, A
+0045 020050             69             JMP DISP_LOOP_2
+                        70
+                        71     DISP_LOOP_1:
+0048 8690               72             MOV P1, @R0
+004A 08                 73             INC R0
+004B B818FA             74             CJNE R0, #18h, DISP_LOOP_1
+004E 80D7               75             JMP LOOP_2
                         76
+                        77     DISP_LOOP_2:
+0050 8690               78             MOV P1, @R0
+0052 08                 79             INC R0
+0053 B818FA             80             CJNE R0, #18h, DISP_LOOP_2
+0056 80C8               81             JMP LOOP_1
+                        82
+                        83     ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
+                        84     ; Calculate new row
+                        85     ; store old layer
+                        86     ; Increment Round counter in 0x00 by one
+                        87     ; Reset A to #000h
+                        88     PREPREG:
+0058 52F0               89             anl     B, A
+005A E8                 90             MOV     A, R0
+005B A6F0               91             MOV     @R0, B
+005D 2401               92             ADD     A, #01d
+005F F8                 93             MOV     R0, A
+0060 7400               94             MOV     A, #000h
+0062 22                 95             RET
+                        96
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 76, WARNING:Missing`END'directive
+Line 96, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -136,6 +156,10 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
+DISP_LOOP_1. . . . . . . . . . . . .  C  ADDR  0048H
+DISP_LOOP_2. . . . . . . . . . . . .  C  ADDR  0050H
+DISP_MATRIX_1. . . . . . . . . . . .  C  ADDR  003AH
+DISP_MATRIX_2. . . . . . . . . . . .  C  ADDR  0041H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -177,9 +201,9 @@ KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 LOOP_1 . . . . . . . . . . . . . . .  C  ADDR  0020H
-LOOP_2 . . . . . . . . . . . . . . .  C  ADDR  0026H
-ONCLICK_1. . . . . . . . . . . . . .  C  ADDR  002CH
-ONCLICK_2. . . . . . . . . . . . . .  C  ADDR  0030H
+LOOP_2 . . . . . . . . . . . . . . .  C  ADDR  0027H
+ONCLICK_1. . . . . . . . . . . . . .  C  ADDR  002EH
+ONCLICK_2. . . . . . . . . . . . . .  C  ADDR  0033H
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -198,7 +222,7 @@ P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
 PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
 PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
 PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
-PREPREG. . . . . . . . . . . . . . .  C  ADDR  0034H  NOT USED
+PREPREG. . . . . . . . . . . . . . .  C  ADDR  0058H  NOT USED
 PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED

@@ -38,25 +38,47 @@ INS1:
 LOOP_1:
 	RL	A
 	JNB	P2.0, ONCLICK_1
-	jmp	LOOP_1
+	jmp	DISP_MATRIX_1
 
 LOOP_2:
 	RL	A
 	JB	P2.0, ONCLICK_2
-	JMP	LOOP_2
+	JMP	DISP_MATRIX_2
 
 
 ; --- ON CLICK ---
 ONCLICK_1:
 	; <implement onClick logic here>
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
-	JMP	LOOP_2
+	JMP 	DISP_MATRIX_1
 
 ONCLICK_2:
 	; <implement onClick logic here>
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
+	JMP 	DISP_MATRIX_2
 	JMP	LOOP_1
 
+DISP_MATRIX_1:
+	MOV R0, #10h
+	MOV P0, A
+	JMP DISP_LOOP_1
+
+DISP_MATRIX_2:
+	MOV R0, #10h
+	MOV P0, A
+	JMP DISP_LOOP_2	
+
+DISP_LOOP_1:
+	MOV P1, @R0
+	INC R0
+	CJNE R0, #18h, DISP_LOOP_1
+	JMP LOOP_2
+
+DISP_LOOP_2:
+	MOV P1, @R0
+	INC R0
+	CJNE R0, #18h, DISP_LOOP_2
+	JMP LOOP_1
 
 ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
 ; Calculate new row
