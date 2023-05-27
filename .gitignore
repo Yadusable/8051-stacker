@@ -2,4 +2,6 @@
 *.mcu8051ide*
 # Compiled Files (?)
 *.*~
-*.bin*
+*.bin
+*.lst
+*.hex
