@@ -74,7 +74,6 @@ ONCLICK_1:	; jump in PRESS Part
 ONCLICK_2:	; execute gamelogic
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
 	CALL 	DISP_MATRIX
-	JMP		LOOP_1
 	CALL 	GAME_STEP
 	RET
 
