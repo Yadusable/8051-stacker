@@ -56,52 +56,23 @@ CYCLE:
 	RL	A
 	MOV	P3, A	; display instruction, later to be replaced by method call
 	JNB	P2.0, ONCLICK_1
-	jmp	DISP_MATRIX_1
 	jmp	CYCLE
 
 PRESS:		; when button released execute game logic
 	JB	P2.0, ONCLICK_2
-	JMP	DISP_MATRIX_2
 	JMP	PRESS
 
 
 ; --- ON CLICK LOGIC ---
 ONCLICK_1:	; jump in PRESS Part
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
-	JMP 	DISP_MATRIX_1
 	JMP	PRESS
 
 ONCLICK_2:	; execute gamelogic
 	MOV	P3, A		; TEST: Wenn P3 mit einem LED Panel verbunden ist, kann man das sehen.
-	JMP 	DISP_MATRIX_2
-	JMP	LOOP_1
 	CALL 	GAME_STEP
 	RET
 
-DISP_MATRIX_1:
-	MOV R1, A
-	MOV R0, #10h
-	MOV A, #80h
-	MOV P1, A
-	CALL DISP_MATRIX_LOOP
-	JMP LOOP_2
-
-DISP_MATRIX_2:
-	MOV R1, A
-	MOV R0, #10h
-	MOV A, #80h
-	MOV P1, A
-	CALL DISP_MATRIX_LOOP
-	JMP LOOP_1
-
-DISP_MATRIX_LOOP:
-	MOV P0, @R0
-	MOV P1, A
-	INC R0
-	RR A
-	CJNE @R0, #00h, DISP_MATRIX_LOOP
-	MOV A, R1
-	RET
 
 ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
 ; Calculate new row
