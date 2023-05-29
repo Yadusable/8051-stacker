@@ -1,11 +1,11 @@
 ; --- INFO ---
-; To start the game, first load the keyboard and matrix configurations
+; To start the game, first load the keyboard and matrix configuration files
 ;
 ; Keyboard port: P2
-; Matrix port: <bitte eintragen @Niklas>
+; Matrix port: P0, P1
 
 START:
-	mov	P0, P1		; initialize P0 and P1
+	MOV	P0, P1		; initialize P0 and P1
 	MOV	R0, #010h	;R0 is the layer counter, 0x10=lowest
 	MOV	B, #0ffh	;all positions are valid for first layer
 	MOV	R2, #128d	;R2 is the round counter, 0001 0000 = 4. round
@@ -57,20 +57,20 @@ CYCLE:
 	RL	A
 	JNB	P2.0, ONCLICK_1
 	CALL	DISP_MATRIX
-	jmp	CYCLE
+	JMP	CYCLE
 
-PRESS:				; when button released execute game logic
+PRESS:				; when button released, execute game logic
 	JB	P2.0, ONCLICK_2
 	CALL	DISP_MATRIX
 	JMP	PRESS
 
 
 ; --- ON CLICK LOGIC ---
-ONCLICK_1:			; jump in PRESS Part
+ONCLICK_1:			; jump in PRESS loop
 	CALL	DISP_MATRIX
 	JMP	PRESS
 
-ONCLICK_2:			; execute gamelogic
+ONCLICK_2:			; call gamelogic
 	CALL	DISP_MATRIX
 	CALL	GAME_STEP
 	RET
@@ -94,30 +94,25 @@ DISP_MATRIX_LOOP:
 	RET
 
 ; --- PREPARE REGISTERS FOR NEXT LEVEL ---
-; Calculate new row
-; check loss condotion
-; store old layer
-; Increment Round counter in 0x00 by one
-; right-rotate R2
-; Reset A to #000h
 GAME_STEP:
+	; Calculate new row
 	ANL	B, A
 	MOV	A, B
-	
+	; Check loss condotion
 	JZ	END
-	
+	; store old layer
 	MOV	A, R0
 	MOV	@R0, B
-	
+	; Increment Round counter in 0x00 by one
 	ADD	A, #01d
 	MOV	R0, A
-
+	; Right-rotate R2
 	MOV	A, R2
 	RR	A
 	MOV	R2, A
-
+	; Reset A to #000h
 	MOV	A, #000h
-
+	; Return
 	RET
 
 END:
